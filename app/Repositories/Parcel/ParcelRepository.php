@@ -50,7 +50,7 @@ class ParcelRepository implements ParcelInterface {
             return Parcel::companywise()->where('company_id',settings()->id)->with('parcelEvent')->where('hub_id',$userHubID)->orderBy('priority_type_id')->orderBy('id','desc')->paginate(10);
         }else{
            return Parcel::companywise()->with('parcelEvent')->orderBy('priority_type_id')->orderBy('id','desc')->paginate(10);
-          
+
         }
 
     }
@@ -270,7 +270,7 @@ class ParcelRepository implements ParcelInterface {
 
     }
 
- 
+
     public function get($id) {
         $userHubID = auth()->user()->hub_id;
         if(!blank($userHubID)){
@@ -292,7 +292,7 @@ class ParcelRepository implements ParcelInterface {
 
     public function parcelTracking($request) {
         return Parcel::where(function($query){
-            if(tenant()): 
+            if(tenant()):
                 $query->where('company_id',settings()->id);
             endif;
         })->where('tracking_id',$request->tracking_id)->first();
@@ -333,13 +333,13 @@ class ParcelRepository implements ParcelInterface {
 
 
     public function RandomTrackingID(){
-        return Str::upper(settings()->par_track_prefix).random_int(11111111,99999999);  
+        return Str::upper(settings()->par_track_prefix).random_int(11111111,99999999);
     }
 
     public function store($request) {
 
         try {
-         
+
             DB::beginTransaction();
             $merchant                       = Merchant::with('user')->find($request->merchant_id);
             $chargeDetails                  = json_decode($request->chargeDetails);
@@ -363,7 +363,7 @@ class ParcelRepository implements ParcelInterface {
 
             $parcel->pickup_lat             = $request->pickup_lat;
             $parcel->pickup_long            = $request->pickup_long;
- 
+
             $parcel->customer_name          = $request->customer_name;
             $parcel->customer_phone         = $request->customer_phone;
             $parcel->customer_address       = $request->customer_address;
@@ -439,20 +439,20 @@ class ParcelRepository implements ParcelInterface {
                 $parcel->liquid_fragile_amount      = $chargeDetails->liquidFragileAmount;
             }
             $parcel->save();
-           
-            $parcel->tracking_id               = $this->RandomTrackingID(); 
+
+            $parcel->tracking_id               = $this->RandomTrackingID();
             $parcel->save();
 
 
-            try {     
-                //wallet 
+            try {
+                //wallet
                 if ($parcel) :
                     $w_merchant                 =  Merchant::find($request->merchant_id);
                     if($w_merchant->wallet_use_activation == Status::ACTIVE):
                         $m_user_id                  = $w_merchant->user_id;
                         $w_merchant->wallet_balance = $w_merchant->wallet_balance - $parcel->total_delivery_amount;
                         $w_merchant->save();
-        
+
                         $walletExpense                 = new Request();
                         $walletExpense['user_id']      = $m_user_id;
                         $walletExpense['merchant_id']  = $request->merchant_id;
@@ -463,9 +463,9 @@ class ParcelRepository implements ParcelInterface {
                 endif;
                 //end wallet
             } catch (\Throwable $th) {
-                
+
             }
-  
+
             // Parcel logs
             $log                         = new ParcelLogs;
             $log->merchant_id            = $request->merchant_id;
@@ -486,7 +486,6 @@ class ParcelRepository implements ParcelInterface {
             $log->note                   = $request->note;
             $log->save();
 
-            // dd($parcel,$parcel->merchant->user->email);
             try {
                 app(PushNotificationService::class)->sendStatusPushNotification($parcel, $parcel->merchant->user->email,'','');
             } catch (\Exception $exception) {
@@ -505,7 +504,7 @@ class ParcelRepository implements ParcelInterface {
             }
             return true;
         }
-        catch (\Exception $e) { 
+        catch (\Exception $e) {
             DB::rollBack();
             return false;
         }
@@ -514,7 +513,7 @@ class ParcelRepository implements ParcelInterface {
     public function duplicateStore($request)
     {
         try {
-           
+
             DB::beginTransaction();
             $merchant                       = Merchant::with('user')->find($request->merchant_id);
             $chargeDetails                  = json_decode($request->chargeDetails);
@@ -540,7 +539,7 @@ class ParcelRepository implements ParcelInterface {
             $parcel->pickup_lat             = $request->pickup_lat;
             $parcel->pickup_long            = $request->pickup_long;
 
- 
+
             $parcel->customer_name          = $request->customer_name;
             $parcel->customer_phone         = $request->customer_phone;
             $parcel->customer_address       = $request->customer_address;
@@ -645,11 +644,11 @@ class ParcelRepository implements ParcelInterface {
                 $parcel->liquid_fragile_amount  = $duplicate_parcel->liquid_fragile_amount;
             }
             $parcel->save();
-           
-            $parcel->tracking_id               = $this->RandomTrackingID();  
+
+            $parcel->tracking_id               = $this->RandomTrackingID();
             $parcel->save();
 
-            try {      
+            try {
                 //wallet
                 if ($parcel) :
                     $w_merchant                 =  Merchant::find($request->merchant_id);
@@ -657,7 +656,7 @@ class ParcelRepository implements ParcelInterface {
                         $m_user_id                  = $w_merchant->user_id;
                         $w_merchant->wallet_balance = $w_merchant->wallet_balance - $parcel->total_delivery_amount;
                         $w_merchant->save();
-    
+
                         $walletExpense                 = new Request();
                         $walletExpense['user_id']      = $m_user_id;
                         $walletExpense['merchant_id']  = $request->merchant_id;
@@ -668,7 +667,7 @@ class ParcelRepository implements ParcelInterface {
                 endif;
                 //end wallet
             } catch (\Throwable $th) {
-                 
+
             }
 
 
@@ -730,7 +729,7 @@ class ParcelRepository implements ParcelInterface {
             $parcel->merchant_shop_id       = $request->shop_id;
             $parcel->pickup_phone           = $request->pickup_phone;
             $parcel->pickup_address         = $request->pickup_address;
- 
+
             $parcel->pickup_lat             = $request->pickup_lat;
             $parcel->pickup_long            = $request->pickup_long;
 
@@ -1104,7 +1103,7 @@ class ParcelRepository implements ParcelInterface {
             return false;
         }
     }
- 
+
     public function deliverymanAssign($id,$request){
 
         try {
@@ -1113,7 +1112,7 @@ class ParcelRepository implements ParcelInterface {
             $deliverymanAssign                  = new ParcelEvent();
             $deliverymanAssign->parcel_id       = $id;
             $deliverymanAssign->delivery_man_id = $request->delivery_man_id;
-            $deliverymanAssign->note            = $request->note;  
+            $deliverymanAssign->note            = $request->note;
             $deliverymanAssign->delivery_lat   = $deliveyrman->delivery_lat;
             $deliverymanAssign->delivery_long  = $deliveyrman->delivery_long;
             $deliverymanAssign->parcel_status   = ParcelStatus::DELIVERY_MAN_ASSIGN;
@@ -1294,7 +1293,7 @@ class ParcelRepository implements ParcelInterface {
 
             return true;
         } catch (\Throwable $th) {
-          
+
             DB::rollBack();
             return false;
         }
@@ -1310,7 +1309,7 @@ class ParcelRepository implements ParcelInterface {
                     'parcel_id'        => null,
                     'cancel_parcel_id' => $id,
                 ]);
-                
+
             }
 
             $receivedPickupman = ParcelEvent::where(['parcel_id'=>$id,'parcel_status'=>ParcelStatus::RECEIVED_BY_PICKUP_MAN])->first();
@@ -1513,7 +1512,7 @@ class ParcelRepository implements ParcelInterface {
                     'parcel_id'        => null,
                     'cancel_parcel_id' => $id,
                 ]);
-              
+
                 // Delivery man current balance update
                 $deliveryMan                                = DeliveryMan::find($event->delivery_man_id);
                 $deliveryMan->current_balance               = $deliveryMan->current_balance - $deliveryMan->return_charge;
@@ -1717,7 +1716,7 @@ class ParcelRepository implements ParcelInterface {
                     'parcel_id'        => null,
                     'cancel_parcel_id' => $id,
                 ]);
-           
+
             }
 
             $returnreschedule     = ParcelEvent::where(['parcel_id'=>$id,'parcel_status'=>ParcelStatus::RETURN_MERCHANT_RE_SCHEDULE])->first();
@@ -1735,8 +1734,8 @@ class ParcelRepository implements ParcelInterface {
     }
 
     public function parcelDelivered($id,$request){
-   
- 
+
+
         try {
 
             $parcelDelivered                = new ParcelEvent();
@@ -1977,7 +1976,7 @@ class ParcelRepository implements ParcelInterface {
                     'cancel_parcel_id' => $id,
                 ]);
 
-             
+
             }
 
             $reSceduleDeliveryman = ParcelEvent::where(['parcel_id'=>$id,'parcel_status'=>ParcelStatus::DELIVERY_RE_SCHEDULE])->first();
@@ -2201,7 +2200,7 @@ class ParcelRepository implements ParcelInterface {
             $parcelPartialDelivered->parcel_id          = $id;
             $parcelPartialDelivered->note               = $request->note;
             $parcelPartialDelivered->parcel_status      = ParcelStatus::PARTIAL_DELIVERED;
-        
+
             $parcelPartialDelivered->created_by         = Auth::user()->id;
             $parcelPartialDelivered->save();
             $parcel                           = Parcel::find($id);
@@ -2664,7 +2663,7 @@ class ParcelRepository implements ParcelInterface {
                     'parcel_id'        => null,
                     'cancel_parcel_id' => $id,
                 ]);
-              
+
             }
             $parcel->status   = ParcelStatus::PENDING;
             $parcel->save();
@@ -2701,7 +2700,7 @@ class ParcelRepository implements ParcelInterface {
                     'parcel_id'        => null,
                     'cancel_parcel_id' => $id,
                 ]);
-           
+
             }
             $parcel->status    = ParcelStatus::PICKUP_ASSIGN;
             $parcel->save();

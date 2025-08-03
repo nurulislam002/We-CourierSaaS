@@ -62,7 +62,7 @@ class MerchantDeliveryChargeRequest extends FormRequest
         $id                                    = $this->id;
         $queryArray['delivery_charge_id']      = request('delivery_charge_id');
         $queryArray['merchant_id']             = $this->merchant;
-        $hubInCharge                           = MerchantDeliveryCharge::where($queryArray)->where('id', '!=', $id)->first();
+        $hubInCharge                           = MerchantDeliveryCharge::companywise()->where($queryArray)->where('id', '!=', $id)->first();
 
         if (blank($hubInCharge)) {
             return false;

@@ -71,6 +71,7 @@ class ParcelController extends Controller
     public function create()
     {
 
+
         try {
             $userID = auth()->user()->id;
             $merchant = $this->repo->getMerchant($userID);
@@ -278,7 +279,7 @@ class ParcelController extends Controller
 
     public function parcelAllStatus(){
         $status    = [];
-       
+
         $status[]  = ['id'=>ParcelStatus::PENDING,                  'status'=>__('parcelStatus.'.ParcelStatus::PENDING)];
         $status[]  = ['id'=>ParcelStatus::PICKUP_ASSIGN,            'status'=>__('parcelStatus.'.ParcelStatus::PICKUP_ASSIGN)];
         $status[]  = ['id'=>ParcelStatus::PICKUP_RE_SCHEDULE,        'status'=>__('parcelStatus.'.ParcelStatus::PICKUP_RE_SCHEDULE)];
@@ -292,10 +293,10 @@ class ParcelController extends Controller
         return response()->json($status);
     }
 
-    public function statusWiseParcelList($status){ 
+    public function statusWiseParcelList($status){
         $parcels  = $this->repo->statusWiseParcelList($status);
         return StatusWiseParcelResource::collection($parcels);
-    }   
+    }
 
 
 }

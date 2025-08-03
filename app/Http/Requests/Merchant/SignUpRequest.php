@@ -29,12 +29,10 @@ class SignUpRequest extends FormRequest
      */
     public function rules()
     {
-        // dd(Request::all());
+
         return [
             'business_name'     => ['required','string'],
             'full_name'         => ['required','string','max:191'],
-            // 'first_name'        => ['required','string','max:191'],
-            // 'last_name'         => ['nullable','string','max:191'],
             'address'           => ['required','string','max:191'],
             'mobile'            => ['required','numeric','digits_between:11,14' ],
             'password'          => ['required','min:6']
@@ -42,11 +40,11 @@ class SignUpRequest extends FormRequest
     }
 
 
-    
+
     public function withValidator($validator)
     {
 
-        $validator->after(function ($validator) { 
+        $validator->after(function ($validator) {
                 if ($this->userUniqueCheck()) {
                     $validator->errors()->add('mobile',  'The  phone has already been taken.');
                 }
@@ -54,13 +52,13 @@ class SignUpRequest extends FormRequest
     }
 
     private function userUniqueCheck()
-    { 
+    {
 
-        $queryArray['company_id']               = settings()->id; 
-        $data = []; 
+        $queryArray['company_id']               = settings()->id;
+        $data = [];
         $data['mobile']  = $this->mobile;
 
-        $user         = User::where($queryArray)->where(function($query)use($data){ 
+        $user         = User::where($queryArray)->where(function($query)use($data){
             $query->where('mobile', $data['mobile']);
         })->first();
         if (blank($user)) {

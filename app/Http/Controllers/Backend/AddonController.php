@@ -80,7 +80,7 @@ class AddonController extends Controller
                     $res = $zip->extractTo(base_path('temp/' . $random_dir . '/addons'));
                     $zip->close();
                 } else {
-                    dd('could not open');
+
                 }
 
                 $str = file_get_contents(base_path('temp/' . $random_dir . '/addons/' . $dir . '/config.json'));

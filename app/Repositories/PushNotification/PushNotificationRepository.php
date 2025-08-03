@@ -61,12 +61,12 @@ class PushNotificationRepository implements PushNotificationInterface{
                 }
 
             } catch (\Exception $exception) {
-                dd($exception);
+
             }
             return true;
         }
         catch (\Exception $e) {
-            dd($e);
+
             return false;
         }
     }

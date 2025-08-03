@@ -57,7 +57,7 @@ class MerchantRepository implements MerchantInterface{
 
 
             $uniqueID                           =  $this->generateUniqueID();
-            $merchantUser                       = new User();  
+            $merchantUser                       = new User();
             $merchantUser->unique_id            = $uniqueID;
             $merchantUser->company_id           = settings()->id;
             $merchantUser->name                 = $request->name;
@@ -74,7 +74,7 @@ class MerchantRepository implements MerchantInterface{
             }
             $merchantUser->save();
 
-            
+
 
             $merchant                       = new Merchant();
             $merchant->company_id           = settings()->id;
@@ -125,6 +125,7 @@ class MerchantRepository implements MerchantInterface{
                 foreach ($deliveryCharges as $delivery){
                     $deliveryCharge                      = new MerchantDeliveryCharge();
                     $deliveryCharge->merchant_id         = $merchant->id;
+                    $deliveryCharge->company_id          = settings()->id;
                     $deliveryCharge->delivery_charge_id  = $delivery->id;
                     $deliveryCharge->weight              = $delivery->weight;
                     $deliveryCharge->category_id         = $delivery->category_id;
@@ -148,13 +149,13 @@ class MerchantRepository implements MerchantInterface{
             return true;
         }
         catch (\Exception $e) {
-            // dd($e);
             DB::rollBack();
             return false;
         }
     }
     //Sign up store merchant data
     public function signUpStore($request) {
+
         try {
             DB::beginTransaction();
             $otp                                = random_int(10000, 99999);
@@ -208,6 +209,8 @@ class MerchantRepository implements MerchantInterface{
                 foreach ($deliveryCharges as $delivery){
                     $deliveryCharge                      = new MerchantDeliveryCharge();
                     $deliveryCharge->merchant_id         = $merchant->id;
+                    $deliveryCharge->company_id          = settings()->id;
+                    $deliveryCharge->merchant_id         = $merchant->id;
                     $deliveryCharge->delivery_charge_id  = $delivery->id;
                     $deliveryCharge->weight              = $delivery->weight;
                     $deliveryCharge->category_id         = $delivery->category_id;
@@ -230,7 +233,7 @@ class MerchantRepository implements MerchantInterface{
             DB::commit();
             return true;
        }
-        catch (\Exception $e) { 
+        catch (\Exception $e) {
             DB::rollBack();
             return false;
         }
@@ -239,7 +242,7 @@ class MerchantRepository implements MerchantInterface{
     public function resendOTP($request) {
         try {
             $otp                                = random_int(10000, 99999);
-            $merchantUser = User::companywise()->where('mobile', $request->mobile)->first(); 
+            $merchantUser = User::companywise()->where('mobile', $request->mobile)->first();
             $merchantUser->otp                  = $otp;
             $merchantUser->save();
 
@@ -339,13 +342,13 @@ class MerchantRepository implements MerchantInterface{
             endif;
             if($request->reference_phone):
                 $merchant->reference_phone       = $request->reference_phone;
-            endif; 
+            endif;
             $merchant->wallet_use_activation  = $request->wallet_use_activation;
             $merchant->save();
             DB::commit();
             return true;
         }
-        catch (\Exception $e) { 
+        catch (\Exception $e) {
             DB::rollBack();
             return false;
         }
@@ -460,14 +463,14 @@ class MerchantRepository implements MerchantInterface{
 
                 // Find user row
                 $user     = User::find($merchant->user_id);
-    
+
                 $upload     = Upload::find($user->image_id);
                 if($upload != null && file_exists($upload->original))
                 {
                     unlink($upload->original);
                     $upload->delete();
                 }
-            
+
                 $nid     = Upload::find($merchant->nid_id);
                 if($nid != null && file_exists($nid->original))
                 {
@@ -481,10 +484,10 @@ class MerchantRepository implements MerchantInterface{
                 {
                     unlink($trade_license->original);
                     $trade_license->delete();
-                } 
+                }
                 // Delete merchant row
                 $merchant->delete();
-                
+
                 $user->delete();
                 return true;
             endif;
@@ -496,7 +499,7 @@ class MerchantRepository implements MerchantInterface{
         }
 
     }
- 
+
     //social login merchant signup
 
         public function socialSignupStore($request,$social) {
@@ -575,7 +578,7 @@ class MerchantRepository implements MerchantInterface{
 
 
         protected function linktoAvatarUpload($user=null,$avatar_original){
-           
+
             try {
                 //profile upload
                 $file             = file_get_contents($avatar_original);

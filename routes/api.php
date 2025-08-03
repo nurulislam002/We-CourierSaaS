@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V10\DeliveryManIncomeExpenseController;
 use App\Http\Controllers\Api\V10\DeliveryManParcelController;
 use App\Http\Controllers\Api\V10\FraudController;
 use App\Http\Controllers\Api\V10\HubController;
+use App\Http\Controllers\Api\V10\MyWalletController;
 use App\Http\Controllers\Api\V10\NewsOfferController;
 use App\Http\Controllers\Api\V10\ParcelController;
 use App\Http\Controllers\Api\V10\PaymentAccountController;
@@ -132,6 +133,10 @@ Route::prefix('v10')->group(function() {
             Route::get('parcel/filter',                                 [ParcelController::class,'filter']);
             Route::get('parcel/{id}/status/{statusId}',                 [ParcelController::class,'statusUpdate']);
             Route::delete('parcel/delete/{id}',                         [ParcelController::class,'destroy']);
+
+            //My wallet and recharge
+            Route::get('merchant/wallet',                               [MyWalletController::class, 'index']);
+            Route::post('merchant/wallet/recharge-add',                 [MyWalletController::class, 'rechargeAdd']);
 
 
             // update v1.2

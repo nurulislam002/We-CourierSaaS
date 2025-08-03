@@ -46,9 +46,6 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e)
     {
 
-        // dd($e->getPrevious());
-
-
         if($this->isHttpException($e)){
 
             if($e->getStatusCode()       == 401){

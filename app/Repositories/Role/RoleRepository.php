@@ -15,14 +15,14 @@ class RoleRepository implements RoleInterface
 
     public function all()
     {
-        return Role::where(function($query){ 
-            $query->where('company_id',settings()->id); 
+        return Role::where(function($query){
+            $query->where('company_id',settings()->id);
         })->orderByDesc('id')->paginate(10);
     }
 
     public function getRole(){
-        return Role::where(function($query){ 
-            $query->where('company_id',settings()->id);  
+        return Role::where(function($query){
+            $query->where('company_id',settings()->id);
         })->where('status',Status::ACTIVE)->get();
     }
     public function get($id)
@@ -34,8 +34,8 @@ class RoleRepository implements RoleInterface
     {
         try {
             $role             = new Role();
-            $role->name       = $request->name;  
-            $role->company_id = settings()->id;  
+            $role->name       = $request->name;
+            $role->company_id = settings()->id;
             $role->permissions= $request->permissions;
             $role->status     = $request->status;
             $role->slug       = str_replace(' ', '-',  strtolower($request->name));
@@ -52,7 +52,7 @@ class RoleRepository implements RoleInterface
         try {
             $role             = Role::find($id);
             $role->name       = $request->name;
-            $role->company_id = settings()->id;  
+            $role->company_id = settings()->id;
             $role->permissions= $request->permissions;
             $role->status     = $request->status;
             $role->slug       = str_replace(' ', '-',  strtolower($request->name));
@@ -81,7 +81,6 @@ class RoleRepository implements RoleInterface
     public function permissions($role)
     {
         if(isSuperadmin()){
-            // dd(array_values(Arr::collapse(SuperAdminPermission::pluck('keywords'))));
             return SuperAdminPermission::all();
         }elseif($role == 'admin' || $role == 'super-admin'){
             $ownerBlockedPermission[]['attribute'] = 'hub_payments_request';
